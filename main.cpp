@@ -8,9 +8,14 @@
 #include "DataStore.hpp"
 #include <sqlite3.h>
 #include <string.h>
+#include <cerrno>
+#include <cstring>
+#include <fstream>
+#include <sstream>
 
 std::string getBookTitle();
 std::string getBookContentPath();
+std::string getBookContent(bool* success);
 
 static int callback(void* data, int argc, char** argv, char** azColName) 
 { 
@@ -30,6 +35,8 @@ int main()
     int functionOption;
     std::string title;
     std::string path;
+    std::string content;
+    bool* result;
     bool successfulOperation;
 
     // Storage testing
@@ -79,13 +86,17 @@ int main()
         case 2:
             std::cout << "Adding a new book:\n";
             title = getBookTitle();
+            // content = getBookContent(result);
             path = getBookContentPath();
-            successfulOperation = lib.AddBook(title, path);
-            if (successfulOperation) {
-                if (!db.CreateBook(title, "This is just a test, well figure out the rest later...")) {
+            // successfulOperation = lib.AddBook(title, path);
+            // if (successfulOperation) {
+                if (!db.CreateBook(title, path)) {
                     std::cout << "Book wasn't saved to disk, deleting from library to maintain data integrity\n";
-                    lib.DeleteBook(title);          
+                    // lib.DeleteBook(title);          
                 }
+            // }
+            if (result) {
+                std::cout << "Yay we had success" << std::endl;
             }
             break;
         case 3:
@@ -123,4 +134,22 @@ std::string getBookContentPath() {
     std::cout << "Please enter txt file name (Note: The file needs to be in the same directory as this library):\n";
     std::getline(std::cin, path);
     return path;
+}
+
+std::string getBookContent(bool* success) {
+    *success = false;
+    std::string fileName;
+    std::cout << "Please enter txt file name (Note: The file needs to be in the same directory as this library):\n";
+    std::getline(std::cin, fileName);
+    std::ostringstream sstr;
+    std::ifstream file(fileName);
+    if (file){
+        *success = true;
+        sstr << file.rdbuf();
+        return sstr.str();
+    } else {
+        std::cerr << "Book not created because the file could not be opened!\n"; // Report error
+        std::cerr << "Error code: " << std::strerror(errno); // Get some info as to why
+        return "";
+    }
 }
