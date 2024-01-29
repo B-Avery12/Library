@@ -15,7 +15,7 @@
 
 std::string getBookTitle();
 std::string getBookContentPath();
-std::string getBookContent(bool* success);
+std::string getBookContent(std::string fileName);
 
 static int callback(void* data, int argc, char** argv, char** azColName) 
 { 
@@ -36,7 +36,6 @@ int main()
     std::string title;
     std::string path;
     std::string content;
-    bool* result;
     bool successfulOperation;
 
     // Storage testing
@@ -67,6 +66,7 @@ int main()
         std::cout << "3 - Update an existing book contents\n";
         std::cout << "4 - Read a specific book\n";
         std::cout << "5 - Delete a specific book\n";
+        std::cout << "6 - Exit the library\n";
         std::cout << "Please enter the number of the action you would like to take and then hit enter\n";
         std::cin >> functionOption;
         std::cin.ignore();
@@ -86,18 +86,15 @@ int main()
         case 2:
             std::cout << "Adding a new book:\n";
             title = getBookTitle();
-            // content = getBookContent(result);
             path = getBookContentPath();
+            content = getBookContent(path);
             // successfulOperation = lib.AddBook(title, path);
             // if (successfulOperation) {
-                if (!db.CreateBook(title, path)) {
+                if (!db.CreateBook(title, content)) {
                     std::cout << "Book wasn't saved to disk, deleting from library to maintain data integrity\n";
                     // lib.DeleteBook(title);          
                 }
             // }
-            if (result) {
-                std::cout << "Yay we had success" << std::endl;
-            }
             break;
         case 3:
             std::cout << "Updating existing book:\n";
@@ -116,6 +113,9 @@ int main()
             title = getBookTitle();
             successfulOperation = lib.DeleteBook(title);
             break;
+        case 6:
+            // Save data maybe?
+            return 0;
         default:
             std::cout << "I'm sorry " << functionOption << " isn't a valid function currently. Please enter a number between 1 and 5\n";
         }
@@ -136,15 +136,10 @@ std::string getBookContentPath() {
     return path;
 }
 
-std::string getBookContent(bool* success) {
-    *success = false;
-    std::string fileName;
-    std::cout << "Please enter txt file name (Note: The file needs to be in the same directory as this library):\n";
-    std::getline(std::cin, fileName);
+std::string getBookContent(std::string fileName) {
     std::ostringstream sstr;
     std::ifstream file(fileName);
     if (file){
-        *success = true;
         sstr << file.rdbuf();
         return sstr.str();
     } else {
