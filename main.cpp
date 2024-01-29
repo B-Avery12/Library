@@ -12,6 +12,19 @@
 std::string getBookTitle();
 std::string getBookContentPath();
 
+static int callback(void* data, int argc, char** argv, char** azColName) 
+{ 
+    int i; 
+    fprintf(stderr, "%s: ", (const char*)data); 
+  
+    for (i = 0; i < argc; i++) { 
+        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL"); 
+    } 
+  
+    printf("\n"); 
+    return 0; 
+}
+
 int main()
 {
     int functionOption;
@@ -61,7 +74,7 @@ int main()
         {
         case 1:
             std::cout << "Listing all books:\n";
-            lib.ListBooks();
+            db.ReadBooks();
             break;
         case 2:
             std::cout << "Adding a new book:\n";
@@ -84,7 +97,8 @@ int main()
         case 4:
             std::cout << "Reading a book:\n";
             title = getBookTitle();
-            lib.ReadBook(title);
+            // lib.ReadBook(title);
+            db.ReadBook(title);
             break;
         case 5:
             std::cout << "Deleting a specific book:\n";

@@ -13,6 +13,8 @@ private:
     std::string UpdateBookQuery;
     std::string ReadBooksQuery;
     std::string DeleteBookQuery;
+    static int specificBookCallback(void* data, int argc, char** argv, char** azColName);
+    static int titleCallBack(void* data, int argc, char** argv, char** azColName);
 public:
     DataStore(); 
     ~DataStore();
@@ -23,6 +25,7 @@ public:
     bool ReadBooks();
     bool UpdateBook(std::string title, std::string content);
     bool DeleteBook(std::string title);
+    bool ReadBook(std::string title);
 };
 
 #endif
