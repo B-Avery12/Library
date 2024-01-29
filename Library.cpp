@@ -45,7 +45,7 @@ bool Library::AddBook(std::string title, std::string fileName) {
         books.insert({title,  sstr.str()});
         return true;
     } else {
-        std::cerr << "Book not create as the file could not be opened!\n"; // Report error
+        std::cerr << "Book not created because the file could not be opened!\n"; // Report error
         std::cerr << "Error code: " << std::strerror(errno); // Get some info as to why
         return false;
     }

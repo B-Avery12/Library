@@ -5,6 +5,7 @@
 #include <map>
 #include <limits>
 #include "Library.hpp"
+#include "DataStore.hpp"
 #include <sqlite3.h>
 #include <string.h>
 
@@ -13,37 +14,29 @@ std::string getBookContentPath();
 
 int main()
 {
-    // Storage testing
-    sqlite3* DB; 
-    std::string sql = "CREATE TABLE LIBRARY("
-                      "TITLE TEXT PRIMARY KEY     NOT NULL, "
-                      "CONTENT          TEXT     NOT NULL);"; 
-    int exit = 0; 
-    exit = sqlite3_open("example.db", &DB); 
-    char* messaggeError; 
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError); 
-
-    if (exit != SQLITE_OK) { 
-        std::cerr << "Error Create Table" << std::endl; 
-        std::cerr << messaggeError << std::endl;
-        if (strcmp(messaggeError, "table LIBRARY already exists") == 0) {
-            std::cout << "We may be onto something here" << std::endl;
-        }
-        sqlite3_free(messaggeError); 
-        sqlite3_close(DB);
-    } 
-    else
-        std::cout << "Table created Successfully" << std::endl; 
-    sqlite3_close(DB); 
-
-
-    Library lib = Library();
-    // Now we need to conecct to the database :D
-
     int functionOption;
     std::string title;
     std::string path;
     bool successfulOperation;
+
+    // Storage testing
+    DataStore db = DataStore(); 
+    if (!db.OpenConnection()) {
+        std::cout << "Shutting down as we weren't able to connect to the datastore." << std::endl;
+        std::cout << "Please enter any key to exit: ";
+        std::cin >> functionOption;
+        return -1;
+    }
+
+    if (!db.CreateTable()) {
+        std::cout << "Shutting down as we weren't able to create correct table in datastore." << std::endl;
+        std::cout << "Please enter any key to exit: ";
+        std::cin >> functionOption;
+        return -1;
+    };
+
+    Library lib = Library();
+    
 
     std::cout << "Welcome to the Library!\n";
     
@@ -75,6 +68,12 @@ int main()
             title = getBookTitle();
             path = getBookContentPath();
             successfulOperation = lib.AddBook(title, path);
+            if (successfulOperation) {
+                if (!db.CreateBook(title, "This is just a test, well figure out the rest later...")) {
+                    std::cout << "Book wasn't saved to disk, deleting from library to maintain data integrity\n";
+                    lib.DeleteBook(title);          
+                }
+            }
             break;
         case 3:
             std::cout << "Updating existing book:\n";

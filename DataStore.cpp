@@ -49,7 +49,9 @@ bool DataStore::CreateTable() {
 bool DataStore::CreateBook(std::string title, std::string content) {
     char* messaggeError;
     int exit = 0;
-    std::string query = std::format("INSERT INTO LIBRARY VALUES({}, {});", title, content);
+    std::string query = std::format("INSERT INTO LIBRARY VALUES('{}', '{}');", title, content);
+    std::cout << "This is the query: \n\n";
+    std:: cout << query << std::endl << std::endl;
     exit = sqlite3_exec(DB, query.c_str(), NULL, 0, &messaggeError);
     if (exit != SQLITE_OK) { 
         std::cerr << "Error creating book: " << messaggeError << std::endl;
@@ -65,7 +67,7 @@ bool DataStore::ReadBooks() {
     std::string query = "";
     exit = sqlite3_exec(DB, query.c_str(), NULL, 0, &messaggeError);
     if (exit != SQLITE_OK) { 
-        std::cerr << "Error creating book: " << messaggeError << std::endl;
+        std::cerr << "Error READING books: " << messaggeError << std::endl;
         sqlite3_free(messaggeError);
         return false;
     } 
