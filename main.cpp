@@ -4,7 +4,6 @@
 #include <iostream>
 #include <map>
 #include <limits>
-#include "Library.hpp"
 #include "DataStore.hpp"
 #include <sqlite3.h>
 #include <string.h>
@@ -54,9 +53,6 @@ int main()
         return -1;
     };
 
-    Library lib = Library();
-    
-
     std::cout << "Welcome to the Library!\n";
     
     while (true) {
@@ -88,33 +84,33 @@ int main()
             title = getBookTitle();
             path = getBookContentPath();
             content = getBookContent(path);
-            // successfulOperation = lib.AddBook(title, path);
-            // if (successfulOperation) {
-                if (!db.CreateBook(title, content)) {
-                    std::cout << "Book wasn't saved to disk, deleting from library to maintain data integrity\n";
-                    // lib.DeleteBook(title);          
-                }
-            // }
+            if (!db.CreateBook(title, content)) {
+                std::cout << "Book wasn't saved\n";
+            }
             break;
         case 3:
             std::cout << "Updating existing book:\n";
             title = getBookTitle();
             path = getBookContentPath();
-            successfulOperation = lib.UpdateBook(title, path);
+            content = getBookContent(path);
+            if (!db.UpdateBook(title, content)) {
+                std::cout << "Book wasn't updated\n";
+            }
+            // successfulOperation = lib.UpdateBook(title, path);
             break;
         case 4:
             std::cout << "Reading a book:\n";
             title = getBookTitle();
-            // lib.ReadBook(title);
             db.ReadBook(title);
             break;
         case 5:
             std::cout << "Deleting a specific book:\n";
             title = getBookTitle();
-            successfulOperation = lib.DeleteBook(title);
+            db.DeleteBook(title);
+            // successfulOperation = lib.DeleteBook(title);
             break;
         case 6:
-            // Save data maybe?
+            db.CloseConnection();
             return 0;
         default:
             std::cout << "I'm sorry " << functionOption << " isn't a valid function currently. Please enter a number between 1 and 5\n";

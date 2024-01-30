@@ -47,19 +47,6 @@ bool DataStore::CreateTable() {
 }
 
 bool DataStore::CreateBook(std::string title, std::string content) {
-    // char* messaggeError;
-    // int exit = 0;
-    // std::string query = std::format("INSERT INTO LIBRARY VALUES('{}', '{}');", title, content);
-    // std::cout << "This is the query: \n\n";
-    // std:: cout << query << std::endl << std::endl;
-    // exit = sqlite3_exec(DB, query.c_str(), NULL, 0, &messaggeError);
-    // if (exit != SQLITE_OK) { 
-    //     std::cerr << "Error creating book: " << messaggeError << std::endl;
-    //     sqlite3_free(messaggeError);
-    //     return false;
-    // } 
-    // return true;
-
     sqlite3_stmt *compiledStatement;
     std::string sql = "INSERT INTO LIBRARY VALUES(?1, ?2);";
     int resultCode = sqlite3_prepare_v2(DB, sql.c_str(), -1, &compiledStatement, NULL);
@@ -88,7 +75,7 @@ bool DataStore::CreateBook(std::string title, std::string content) {
         int textColumn = 1;
         std::cout << sqlite3_column_text(compiledStatement, textColumn);
     } else if (resultCode != SQLITE_DONE) {
-        std::cerr << "Error adding book: " << sqlite3_errmsg(DB) << std::endl;
+        std::cerr << "Error adding book druing step: " << sqlite3_errmsg(DB) << std::endl;
         sqlite3_finalize(compiledStatement);
 
         return false;
@@ -112,19 +99,71 @@ bool DataStore::ReadBooks() {
 }
 
 bool DataStore::UpdateBook(std::string title, std::string content) {
+    sqlite3_stmt *compiledStatement;
+    std::string sql = "UPDATE LIBRARY SET CONTENT = ?1 WHERE TITLE = ?2;";
+    int resultCode = sqlite3_prepare_v2(DB, sql.c_str(), -1, &compiledStatement, NULL);
+    if (resultCode != SQLITE_OK) {
+        std::cerr << "Error updating book: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_finalize(compiledStatement);
+        return false;
+    }
+
+    resultCode = sqlite3_bind_text(compiledStatement, 1, content.c_str(), -1, NULL);
+    if (resultCode != SQLITE_OK) {
+        std::cerr << "Error updating book during content bind: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_finalize(compiledStatement);
+        return false;
+    }
+
+    resultCode = sqlite3_bind_text(compiledStatement, 2, title.c_str(), -1, NULL);
+    if (resultCode != SQLITE_OK) {
+        std::cerr << "Error updating book during title bind: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_finalize(compiledStatement);
+        return false;
+    }
+
+    resultCode = sqlite3_step(compiledStatement);
+    if (resultCode == SQLITE_ROW) {
+        int textColumn = 1;
+        std::cout << sqlite3_column_text(compiledStatement, textColumn);
+    } else if (resultCode != SQLITE_DONE) {
+        std::cerr << "Error updating book druing step: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_finalize(compiledStatement);
+
+        return false;
+    }
+
+    sqlite3_finalize(compiledStatement);
+
     return true;
 }
 
 bool DataStore::DeleteBook(std::string title) {
-    char* messaggeError;
-    int exit = 0;
-    std::string query = std::format("DELETE FROM LIBRARY WHERE TITLE = {};", title);
-    exit = sqlite3_exec(DB, query.c_str(), NULL, 0, &messaggeError);
-    if (exit != SQLITE_OK) { 
-        std::cerr << "Error creating book: " << messaggeError << std::endl;
-        sqlite3_free(messaggeError);
+    sqlite3_stmt *compiledStatement;
+    std::string sql = "DELETE FROM LIBRARY WHERE TITLE = ?1;";
+    int resultCode = sqlite3_prepare_v2(DB, sql.c_str(), -1, &compiledStatement, NULL);
+    if (resultCode != SQLITE_OK) {
+        std::cerr << "Error Deleting book: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_finalize(compiledStatement);
         return false;
-    } 
+    }
+
+    resultCode = sqlite3_bind_text(compiledStatement, 1, title.c_str(), -1, NULL);
+    if (resultCode != SQLITE_OK) {
+        std::cerr << "Error deleting book during title bind: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_finalize(compiledStatement);
+        return false;
+    }
+
+    resultCode = sqlite3_step(compiledStatement);
+    if (resultCode != SQLITE_DONE) {
+        std::cerr << "Error deleting book during step: " << sqlite3_errmsg(DB) << std::endl;
+        sqlite3_finalize(compiledStatement);
+        return false;
+    }
+
+    sqlite3_finalize(compiledStatement);
+
     return true;
 }
 
@@ -150,7 +189,7 @@ bool DataStore::ReadBook(std::string title) {
         int textColumn = 1;
         std::cout << sqlite3_column_text(compiledStatement, textColumn);
     } else if (resultCode != SQLITE_DONE) {
-        std::cerr << "Error reading book: " << sqlite3_errmsg(DB) << std::endl;
+        std::cerr << "Error reading book during step: " << sqlite3_errmsg(DB) << std::endl;
         sqlite3_finalize(compiledStatement);
 
         return false;

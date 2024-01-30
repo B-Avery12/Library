@@ -13,7 +13,6 @@ private:
     std::string UpdateBookQuery;
     std::string ReadBooksQuery;
     std::string DeleteBookQuery;
-    static int specificBookCallback(void* data, int argc, char** argv, char** azColName);
     static int titleCallBack(void* data, int argc, char** argv, char** azColName);
 public:
     DataStore(); 
