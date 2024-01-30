@@ -112,14 +112,14 @@ int main()
 
 std::string getBookTitle() {
     std::string title;
-    std::cout << "Please enter the title for the book:\n";
+    std::cout << "Please type the title for the book and press enter:\n";
     std::getline(std::cin, title);
     return title;
 }
 
 std::string getBookContentPath() {
     std::string path;
-    std::cout << "Please enter txt file name (Note: The file needs to be in the same directory as this library):\n";
+    std::cout << "Please enter the file path and press enter (Note: This needs to be the relative path to the file from the exe):\n";
     std::getline(std::cin, path);
     return path;
 }
