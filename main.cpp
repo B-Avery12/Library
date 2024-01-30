@@ -45,8 +45,8 @@ int main()
     while (true) {
         std::cout << "\nAt the library you can do 5 things:\n"
                 << "1 - List all the books we have\n"
-                << "2 - Add a new book to the librayr\n"
-                << "3 - Update an existing book contents\n"
+                << "2 - Add a new book to the library\n"
+                << "3 - Update an existing books contents\n"
                 << "4 - Read a specific book\n"
                 << "5 - Delete a specific book\n"
                 << "6 - Exit the library\n"
