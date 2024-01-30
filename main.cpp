@@ -16,19 +16,6 @@ std::string getBookTitle();
 std::string getBookContentPath();
 std::string getBookContent(std::string fileName);
 
-static int callback(void* data, int argc, char** argv, char** azColName) 
-{ 
-    int i; 
-    fprintf(stderr, "%s: ", (const char*)data); 
-  
-    for (i = 0; i < argc; i++) { 
-        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL"); 
-    } 
-  
-    printf("\n"); 
-    return 0; 
-}
-
 int main()
 {
     int functionOption;
@@ -40,15 +27,15 @@ int main()
     // Storage testing
     DataStore db = DataStore(); 
     if (!db.OpenConnection()) {
-        std::cout << "Shutting down as we weren't able to connect to the datastore." << std::endl;
-        std::cout << "Please enter any key to exit: ";
+        std::cout << "Shutting down as we weren't able to connect to the datastore." << std::endl
+                << "Please enter any key to exit: ";
         std::cin >> functionOption;
         return -1;
     }
 
     if (!db.CreateTable()) {
-        std::cout << "Shutting down as we weren't able to create correct table in datastore." << std::endl;
-        std::cout << "Please enter any key to exit: ";
+        std::cout << "Shutting down as we weren't able to create correct table in datastore." << std::endl
+                << "Please enter any key to exit: ";
         std::cin >> functionOption;
         return -1;
     };
@@ -56,14 +43,15 @@ int main()
     std::cout << "Welcome to the Library!\n";
     
     while (true) {
-        std::cout << "\nAt the library you can do 5 things:\n";
-        std::cout << "1 - List all the books we have\n";
-        std::cout << "2 - Add a new book to the librayr\n";
-        std::cout << "3 - Update an existing book contents\n";
-        std::cout << "4 - Read a specific book\n";
-        std::cout << "5 - Delete a specific book\n";
-        std::cout << "6 - Exit the library\n";
-        std::cout << "Please enter the number of the action you would like to take and then hit enter\n";
+        std::cout << "\nAt the library you can do 5 things:\n"
+                << "1 - List all the books we have\n"
+                << "2 - Add a new book to the librayr\n"
+                << "3 - Update an existing book contents\n"
+                << "4 - Read a specific book\n"
+                << "5 - Delete a specific book\n"
+                << "6 - Exit the library\n"
+                << "Please enter the number of the action you would like to take and then hit enter\n";
+        
         std::cin >> functionOption;
         std::cin.ignore();
 
@@ -76,8 +64,10 @@ int main()
         switch (functionOption) 
         {
         case 1:
-            std::cout << "Listing all books:\n";
-            db.ReadBooks();
+            std::cout << "Here's our books:\n";
+            if (!db.ReadBooks()) {
+                std::cout << "Unable to list our books I'm sorry\n";
+            }
             break;
         case 2:
             std::cout << "Adding a new book:\n";
@@ -96,18 +86,20 @@ int main()
             if (!db.UpdateBook(title, content)) {
                 std::cout << "Book wasn't updated\n";
             }
-            // successfulOperation = lib.UpdateBook(title, path);
             break;
         case 4:
             std::cout << "Reading a book:\n";
             title = getBookTitle();
-            db.ReadBook(title);
+            if (!db.ReadBook(title)) {
+                std::cout << "Uanble to read book\n";
+            }
             break;
         case 5:
             std::cout << "Deleting a specific book:\n";
             title = getBookTitle();
-            db.DeleteBook(title);
-            // successfulOperation = lib.DeleteBook(title);
+            if (!db.DeleteBook(title)) {
+                std::cout << "Book wasn't deleted\n";
+            }
             break;
         case 6:
             db.CloseConnection();

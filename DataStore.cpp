@@ -5,12 +5,7 @@
 #include <format>
 
 DataStore::DataStore() {
-    TableExistsError = "";
     DBName = "LibraryStore"; // This might throw an error since we're using char*, not strin
-    CreateBookQuery = "";
-    UpdateBookQuery = "";
-    ReadBooksQuery = "";
-    DeleteBookQuery = "";
 }
 
 DataStore::~DataStore() {
@@ -32,8 +27,8 @@ bool DataStore::CreateTable() {
     char* messaggeError;
     int exit = 0;
     std::string sql = "CREATE TABLE LIBRARY("
-                      "TITLE TEXT PRIMARY KEY     NOT NULL, "
-                      "CONTENT          TEXT     NOT NULL);"; 
+                        "TITLE    TEXT    PRIMARY KEY    NOT NULL, "
+                        "CONTENT  TEXT                   NOT NULL);"; 
     exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError); 
 
     if (exit != SQLITE_OK) { 

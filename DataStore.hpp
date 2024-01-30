@@ -6,13 +6,8 @@
 
 class DataStore {
 private:
-    std::string TableExistsError;
     sqlite3* DB;
     std::string DBName;
-    std::string CreateBookQuery;
-    std::string UpdateBookQuery;
-    std::string ReadBooksQuery;
-    std::string DeleteBookQuery;
     static int titleCallBack(void* data, int argc, char** argv, char** azColName);
 public:
     DataStore(); 
