@@ -5,7 +5,7 @@
 #include <format>
 
 DataStore::DataStore() {
-    DBName = "LibraryStore.db"; // This might throw an error since we're using char*, not strin
+    DBName = "LibraryStore.db";
 }
 
 DataStore::~DataStore() {
